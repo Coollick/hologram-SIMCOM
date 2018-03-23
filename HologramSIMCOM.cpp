@@ -146,6 +146,14 @@ bool HologramSIMCOM::cellService() {
     int ip = _writeCommand("AT+CIFSR\r\n", 1, ".", "ERROR");
     int pdp = _writeCommand("AT+CIPSTATUS?\r\n", 10, "IP", "DEACT");
 
+    if(_DEBUG==1) {
+        Serial.print("DEBUG: SIG=");Serial.print(sig);
+        Serial.print(" GPRS=");Serial.print(gprs);
+        Serial.print(" MUX=");Serial.print(mux);
+        Serial.print(" IP=");Serial.print(ip);
+        Serial.print(" PDP=");Serial.println(pdp);
+    }
+
     if(gprs == 2 && pdp == 2 && mux == 2 && ip == 2 && sig > 0) {
         connection = true;
     } else {
@@ -153,8 +161,10 @@ bool HologramSIMCOM::cellService() {
         if(!_connectNetwork()) {
             Serial.println(F("ERROR: unable to connect to cellular network"));
             connection = false;
+        } else {
+            if(_DEBUG==1) Serial.println(F("DEBUG: reconnected"));
+            connection = true;
         }
-        connection = true;
     }
 
     return connection;
