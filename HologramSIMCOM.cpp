@@ -140,11 +140,11 @@ bool HologramSIMCOM::cellService() {
     bool connection;
 
     // need to check each of these commands depending on how connection is lost
+    int sig = cellStrength();
     int gprs = _writeCommand("AT+CGATT?\r\n", 10, "+CGATT: 1", "ERROR");
-    int pdp = _writeCommand("AT+CIPSTATUS?\r\n", 10, "IP", "DEACT");
     int mux = _writeCommand("AT+CIPMUX?\r\n", 10, "+CIPMUX: 1", "+CIPMUX: 0");
     int ip = _writeCommand("AT+CIFSR\r\n", 1, ".", "ERROR");
-    int sig = cellStrength();
+    int pdp = _writeCommand("AT+CIPSTATUS?\r\n", 10, "IP", "DEACT");
 
     if(gprs == 2 && pdp == 2 && mux == 2 && ip == 2 && sig > 0) {
         connection = true;
