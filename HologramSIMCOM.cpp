@@ -435,6 +435,11 @@ bool HologramSIMCOM::_connectNetwork() {
             break;
         }
 
+		//TIMEOUT FIX, wait for CIICR to complete
+        while(_writeCommand("AT\r\n", 1, "OK", "ERROR", true) != 2) {
+            delay(1000);
+        }
+
         // Get local IP address
         if(_writeCommand("AT+CIFSR\r\n", 1, ".", "ERROR") != 2) {
             Serial.println(F("ERROR: failed at +CIFSR"));
