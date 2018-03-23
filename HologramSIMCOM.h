@@ -10,18 +10,16 @@
 #define __HologramSIMCOM_H__
 
 #include "Arduino.h"
-#include <SoftwareSerial.h>
 
 class HologramSIMCOM {
 public:
 
     // Pre-setup - set globals -----------------------------------------
-    HologramSIMCOM(const int txPin,const int rxPin,const int resetPin,const char* deviceKey)
-            :serialHologram(txPin, rxPin){
+    HologramSIMCOM(HardwareSerial *hwSerialPort, const int resetPin,const char* deviceKey) {
         _DEVICEKEY = deviceKey;
         _RESETPIN = resetPin;
+        _SERIAL = hwSerialPort;
     };
-    SoftwareSerial serialHologram;
 
     // Setup Methods ----------------------------------------------------
     bool begin(const int baud); // Must pass baud to setup module
@@ -46,6 +44,7 @@ public:
 private:
     // Globals ------------------------------------------------------------
     const char* _DEVICEKEY; // Hologram's Device Key
+    HardwareSerial *_SERIAL;
     int _RESETPIN;
     int _SERVERPORT; // Modem's server port
     int _MODEMSTATE = 1; // State of modem [0-busy, 1-available]

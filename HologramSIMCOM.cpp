@@ -30,8 +30,8 @@ bool HologramSIMCOM::begin(const int baud) {
         Serial.begin(baud);
         while(!Serial); // wait for Serial to be ready
     }
-    serialHologram.begin(baud);
-    while(!serialHologram); // wait for Serial to be ready
+    _SERIAL->begin(baud);
+    while(!_SERIAL); // wait for Serial to be ready
     _MODEMSTATE = 1; // set state as available
 
     // RUN MODEM BEGIN AT COMMANDS
@@ -132,9 +132,9 @@ void HologramSIMCOM::debug() {
     // normally we get debug messages when another function runs a modem command
     // but if there is not another function using the modem then we need to listen
     // MAKE SURE Arduino serial monitor is sending both NL & CR!!
-    if(_MODEMSTATE == 1 && serialHologram.available() > 0) {
+    if(_MODEMSTATE == 1 && _SERIAL->available() > 0) {
         _MODEMSTATE = 0;
-        while(serialHologram.available() > 0) {
+        while(_SERIAL->available() > 0) {
             _readSerial();
         }
         _MODEMSTATE = 1;
@@ -272,10 +272,10 @@ void HologramSIMCOM::_readSerial() {
     // this is the only function allowed to do it
     _SERIALBUFFER = "";
 
-    if (serialHologram.available() > 0) {
+    if (_SERIAL->available() > 0) {
         delay(20); // allow for buffer to build
-        while ( serialHologram.available() > 0 ) { // move serial buffer into global String
-            char r = serialHologram.read();
+        while ( _SERIAL->available() > 0 ) { // move serial buffer into global String
+            char r = _SERIAL->read();
             _SERIALBUFFER += r;
 
             if (_SERIALBUFFER.endsWith("\n" )) { // we read the serial one line at a time
@@ -306,8 +306,8 @@ void HologramSIMCOM::_checkIfInbound() {
     // Check for inbound message and throw incoming into _MESSAGEBUFFER
     if(_SERIALBUFFER.indexOf("+RECEIVE,0,") != -1) {
 
-        while ( serialHologram.available() > 0 ) { // move serial buffer into global String
-            char r = serialHologram.read();
+        while ( _SERIAL->available() > 0 ) { // move serial buffer into global String
+            char r = _SERIAL->read();
             _MESSAGEBUFFER += r;
 
             if (_MESSAGEBUFFER.endsWith("\n" )) { // we read only one line
@@ -325,8 +325,8 @@ void HologramSIMCOM::_checkIfInbound() {
         _MODEMSTATE = 1;
         _writeCommand("AT+CMGR=1\r\n",5,"+CMGR: ", "ERROR");
         //delay(200);
-        while ( serialHologram.available() > 0 ) { // move serial buffer into global String
-            char r = serialHologram.read();
+        while ( _SERIAL->available() > 0 ) { // move serial buffer into global String
+            char r = _SERIAL->read();
             _MESSAGEBUFFER += r;
 
             if (_MESSAGEBUFFER.endsWith("\n" )) { // we read only one line
@@ -349,7 +349,7 @@ void HologramSIMCOM::_writeSerial(const char* string) {
         Serial.println(string);
     }
 
-    serialHologram.write(string); // send command
+    _SERIAL->write(string); // send command
 }
 
 void HologramSIMCOM::_writeCommand(const char* command, const long timeout) {
