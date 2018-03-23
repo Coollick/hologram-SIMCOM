@@ -149,8 +149,8 @@ bool HologramSIMCOM::cellService() {
     int sig = cellStrength();
     int gprs = _writeCommand("AT+CGATT?\r\n", 10, "+CGATT: 1", "ERROR");
     int mux = _writeCommand("AT+CIPMUX?\r\n", 10, "+CIPMUX: 1", "+CIPMUX: 0");
-    int ip = _writeCommand("AT+CIFSR\r\n", 1, ".", "ERROR");
-    int pdp = _writeCommand("AT+CIPSTATUS?\r\n", 10, "IP", "DEACT");
+    int ip = _writeCommand("AT+CIFSR\r\n", 10, ".", "ERROR");
+    int pdp = _writeCommand("AT+CIPSTATUS\r\n", 10, "STATE: IP", "DEACT");
 
     if(_DEBUG==1) {
         Serial.print("DEBUG: SIG=");Serial.print(sig);
@@ -451,8 +451,8 @@ bool HologramSIMCOM::_connectNetwork() {
             break;
         }
 
-		//TIMEOUT FIX, wait for CIICR to complete
-        while(_writeCommand("AT\r\n", 1, "OK", "ERROR", true) != 2) {
+        //TIMEOUT FIX, wait for CIICR to complete
+        while(_writeCommand("AT\r\n", 1, "OK", "ERROR") != 2) {
             delay(1000);
         }
 
