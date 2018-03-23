@@ -56,6 +56,12 @@ bool HologramSIMCOM::begin(const int baud) {
             break;
         }
 
+        // Enable local time stamp (SIM800)
+        if(_writeCommand("AT+CLTS=1\r\n", 1, "OK", "ERROR") != 2) {
+            Serial.println(F("ERROR: begin() failed at +CLTS"));
+            break;
+        }
+
         if(cellStrength() == 0) {
             Serial.println(F("ERROR: no signal"));
             break;
